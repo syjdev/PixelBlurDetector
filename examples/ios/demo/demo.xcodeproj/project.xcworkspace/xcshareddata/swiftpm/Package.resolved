@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/syjdev/PixelBlurDetector-iOS",
       "state" : {
-        "revision" : "46f2e7ed4beb4d89676710d81547fea837e73b13",
-        "version" : "3.0.0"
+        "revision" : "5725025c5cad7915069de4cf7b10d26dc32c3247",
+        "version" : "3.0.1"
       }
     }
   ],

@@ -56,7 +56,7 @@ and enter `https://github.com/syjdev/PixelBlurDetector-iOS`, or add it to your `
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/syjdev/PixelBlurDetector-iOS.git", from: "3.0.0"),
+    .package(url: "https://github.com/syjdev/PixelBlurDetector-iOS.git", from: "3.0.1"),
 ],
 targets: [
     .target(name: "YourApp", dependencies: [
@@ -85,7 +85,7 @@ Add the dependency from Maven Central (minSdk 26):
 
 ```kotlin
 dependencies {
-    implementation("io.github.syjdev:pixel-blur-detector:3.0.0")
+    implementation("io.github.syjdev:pixel-blur-detector:3.0.1")
 }
 ```
 

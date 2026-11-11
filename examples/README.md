@@ -14,7 +14,7 @@ repository root.
 ## iOS
 
 Open `examples/ios/demo/demo.xcodeproj` in Xcode, select the `demo` scheme and run. Xcode fetches
-`PixelBlurDetectorKit` from `https://github.com/syjdev/PixelBlurDetector-iOS` (3.0.0 up to the next
+`PixelBlurDetectorKit` from `https://github.com/syjdev/PixelBlurDetector-iOS` (3.0.1 up to the next
 major version).
 
 ```bash
@@ -37,7 +37,7 @@ cd examples/android
 ```
 
 Requires the Android SDK (platform 35, build-tools 34+) and JDK 17. The app depends on
-`io.github.syjdev:pixel-blur-detector:3.0.0` from Maven Central.
+`io.github.syjdev:pixel-blur-detector:3.0.1` from Maven Central.
 
 To try local changes to the SDK, pass the path of your `PixelBlurDetector-Android` clone. Gradle then
 builds the SDK from that checkout (a composite build) instead of downloading it. A relative path is

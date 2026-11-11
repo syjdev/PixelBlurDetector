@@ -399,7 +399,7 @@
 			repositoryURL = "https://github.com/syjdev/PixelBlurDetector-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				minimumVersion = 3.0.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
