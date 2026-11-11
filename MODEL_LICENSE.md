@@ -14,7 +14,7 @@ source code. Each SDK repository has its own copy of this document.
 
 ## Training data
 
-The models were trained on two academic datasets:
+The models were trained on three academic datasets:
 
 1. **CUHK Blur Detection Dataset**
    (J. Shi, L. Xu, J. Jia, *"Discriminative Blur Detection Features"*, CVPR 2014)
@@ -23,15 +23,24 @@ The models were trained on two academic datasets:
    (W. Zhao, F. Zhao, D. Wang, H. Lu, *"Defocus Blur Detection via Multi-stream Bottom-Top-Bottom
    Fully Convolutional Network"*, CVPR 2018)
    <https://openaccess.thecvf.com/content_cvpr_2018/html/Zhao_Defocus_Blur_Detection_CVPR_2018_paper.html>
+3. **EBD Dataset**
+   (Y. Jin, M. Qian, J. Xiong, N. Xue, G.-S. Xia, *"Depth and DOF Cues Make A Better Defocus Blur
+   Detector"*, ICME 2023)
+   <https://github.com/yuxinjin-whu/D-DFFNet>
+
+> **Correction (October 2026):** earlier versions of this document listed only CUHK and DUT-DBD.
+> The training data also included EBD, which was left out by mistake.
 
 ## Current status: license unclear, non-commercial for now ⚠️
 
-**Neither dataset states a license.** As of October 2026:
+**None of the three datasets states a license.** As of October 2026:
 
 - The CUHK dataset page describes the data and links the downloads, but gives no license, terms of
   use or statement about commercial use.
 - The original DUT-DBD project page (`ice.dlut.edu.cn/ZhaoWenda/BTBCRLNet.html`) is no longer
   reachable, and no license for the dataset has been found elsewhere.
+- The EBD dataset is distributed through the authors' code repository, which describes it as a
+  test set and gives no license for the dataset or the code.
 
 Without a license, we can't confirm that commercial use of these datasets, or of models trained on
 them, is allowed. Whether trained model weights are a derivative work of their training data is
@@ -39,8 +48,8 @@ also legally unsettled. Until this is resolved:
 
 - The model artifacts are offered for **research and non-commercial use only**.
 - **Do not ship them in a commercial or closed-source application.**
-- If you want to use them commercially, **contact the authors of both datasets first.**
-  Permission for one dataset alone is not enough, because the models were trained on both.
+- If you want to use them commercially, **contact the authors of all three datasets first.**
+  Permission for one or two of them is not enough, because the models were trained on all three.
 
 This is a conservative, good-faith position, **not legal advice**.
 
@@ -48,7 +57,7 @@ This is a conservative, good-faith position, **not legal advice**.
 
 One of the following must happen first:
 
-1. **Get written permission** from the authors of **both** the CUHK and DUT-DBD datasets for
+1. **Get written permission** from the authors of **all three** datasets (CUHK, DUT-DBD and EBD) for
    commercial use of models trained on them, and record it here (and in `NOTICE`).
 2. **Retrain** the models on data whose license allows commercial use (or on self-collected data),
    and replace the artifacts above in both SDKs.

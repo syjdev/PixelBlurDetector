@@ -8,16 +8,17 @@ Each demo depends on the published SDK, the same way your app would:
 [PixelBlurDetector-iOS](https://github.com/syjdev/PixelBlurDetector-iOS) through Swift Package
 Manager and [PixelBlurDetector-Android](https://github.com/syjdev/PixelBlurDetector-Android)
 (`io.github.syjdev:pixel-blur-detector`) from Maven Central. Each section below shows how to build
-a demo against a local checkout of the SDK instead.
+a demo against a local checkout of the SDK instead. Paths and commands are relative to the
+repository root.
 
 ## iOS
 
-Open `ios/demo/demo.xcodeproj` in Xcode, select the `demo` scheme and run. Xcode fetches
+Open `examples/ios/demo/demo.xcodeproj` in Xcode, select the `demo` scheme and run. Xcode fetches
 `PixelBlurDetectorKit` from `https://github.com/syjdev/PixelBlurDetector-iOS` (3.0.0 up to the next
 major version).
 
 ```bash
-xcodebuild build -project ios/demo/demo.xcodeproj -scheme demo \
+xcodebuild build -project examples/ios/demo/demo.xcodeproj -scheme demo \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
@@ -27,10 +28,10 @@ the project file. Remove it from the navigator to switch back.
 
 ## Android
 
-Open `android/` in Android Studio and run the `app` configuration, or from the command line:
+Open `examples/android/` in Android Studio and run the `app` configuration, or from the command line:
 
 ```bash
-cd android
+cd examples/android
 ./gradlew :app:assembleDebug   # build the APK
 ./gradlew :app:installDebug    # install on a running device/emulator
 ```
@@ -39,8 +40,8 @@ Requires the Android SDK (platform 35, build-tools 34+) and JDK 17. The app depe
 `io.github.syjdev:pixel-blur-detector:3.0.0` from Maven Central.
 
 To try local changes to the SDK, pass the path of your `PixelBlurDetector-Android` clone. Gradle then
-builds the SDK from that checkout (a composite build) instead of downloading it. With both
-repositories cloned side by side:
+builds the SDK from that checkout (a composite build) instead of downloading it. A relative path is
+resolved from `examples/android`; with both repositories cloned side by side:
 
 ```bash
 ./gradlew :app:assembleDebug -PpixelBlurDetectorSdkPath=../../../PixelBlurDetector-Android

@@ -10,9 +10,9 @@ The demo apps depend on the PixelBlurDetector SDKs
 (https://github.com/syjdev/PixelBlurDetector-iOS and
 https://github.com/syjdev/PixelBlurDetector-Android), whose bundled
 machine-learning models are NOT covered by the Apache-2.0 license. They were
-trained on the CUHK Blur Detection Dataset (CVPR 2014) and the DUT-DBD
-Dataset (CVPR 2018), and are distributed under separate, more restrictive
-(non-commercial) terms. See MODEL_LICENSE.md.
+trained on the CUHK Blur Detection Dataset (CVPR 2014), the DUT-DBD Dataset
+(CVPR 2018) and the EBD Dataset (ICME 2023), and are distributed under
+separate, more restrictive (non-commercial) terms. See MODEL_LICENSE.md.
 
 The demo sample images in this repository are CC0 / public-domain images
 from Wikimedia Commons (not from the datasets above); see the

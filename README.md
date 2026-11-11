@@ -29,6 +29,9 @@ produce matching results.
   rather than returning one score for the whole image.
 - **Simple blur check**: `blurRatio()` gives the fraction of blurry pixels, which you can
   threshold to decide whether a photo is blurry.
+- **Small model**: about 1.0M parameters, at least 15× fewer than the published defocus blur
+  detectors it is compared with. Retrained on the standard training sets, it comes close to 2021
+  methods such as EFENet; see [Benchmarks](#benchmarks).
 - **Runs entirely on device**: there is no server or network call. On iOS it uses the CPU, GPU or
   Neural Engine through Core ML; on Android it uses TensorFlow Lite.
 - **Same results on iOS and Android**: both platforms run the same float model with the same
@@ -36,8 +39,6 @@ produce matching results.
   input on each.
 - **Any image size**: input is letterboxed to 224×224, and the map is cropped back to the image's
   aspect ratio and EXIF orientation.
-- **Built-in profiling**: every result reports how long preprocessing, inference and
-  postprocessing took.
 
 ## Use cases
 
@@ -68,7 +69,7 @@ targets: [
 import PixelBlurDetectorKit
 
 let detector = PixelBlurDetector()   // an actor; share one instance
-try await detector.prepare()         // optional: preload the model
+try await detector.prepare()         // optional: otherwise the first predict() loads the model
 
 let observation = try await detector.predict(input: cgImage, orientation: .up)
 
@@ -93,7 +94,7 @@ import dev.syjdev.pixelblurdetector.PixelBlurDetector
 import dev.syjdev.pixelblurdetector.ImageOrientation
 
 val detector = PixelBlurDetector(context)   // share one instance
-detector.prepare()                           // optional: preload the model
+detector.prepare()                           // optional: otherwise the first predict() loads the model
 
 val observation = detector.predict(bitmap, ImageOrientation.fromExif(exifOrientation))
 
@@ -129,6 +130,59 @@ for details.
 Input: `1×224×224×3` float32 RGB in `[0, 1]`. Output: `1×224×224×1` float32 sigmoid, where 1 is
 blurry.
 
+## Benchmarks
+
+Accuracy on the standard defocus blur detection test sets: CUHK-TE-1 (100 images of the
+[CUHK](http://www.cse.cuhk.edu.hk/~leojia/projects/dblurdetect/dataset.html) defocus set) and
+DUT-TE (the 500 test images of
+[DUT-DBD](https://openaccess.thecvf.com/content_cvpr_2018/html/Zhao_Defocus_Blur_Detection_CVPR_2018_paper.html)).
+The metrics follow the evaluation code of [D-DFFNet](https://github.com/yuxinjin-whu/D-DFFNet), with
+blurred pixels as the positive class: MAE (lower is better), and Fβ (β² = 0.3) and IoU at a 0.5
+threshold (higher is better).
+
+Published methods are trained on fixed training sets, so for a fair comparison we retrained the
+same model on each of them. The published numbers come from Tables I and II of the
+[D-DFFNet paper](https://arxiv.org/abs/2306.11334) (ICME 2023), which re-evaluated every method
+with the same code.
+
+**Trained on CUHK-TR-1 + DUT-TR**
+
+| Model | Parameters | CUHK-TE-1 MAE / Fβ / IoU | DUT-TE MAE / Fβ / IoU |
+|---|---|---|---|
+| AENet (2021) | ≥ 14.7M | 0.049 / 0.964 / 0.935 | 0.120 / 0.886 / 0.855 |
+| EFENet (2021) | – | 0.052 / 0.958 / 0.935 | 0.091 / 0.927 / 0.883 |
+| D-DFFNet (2023) | ≥ 46M | 0.039 / 0.970 / 0.947 | 0.060 / 0.950 / 0.919 |
+| **PixelBlurDetector** | **1.0M** | 0.070 / 0.962 / 0.928 | 0.106 / 0.921 / 0.881 |
+
+**Trained on CUHK-TR-1 only**
+
+| Model | Parameters | CUHK-TE-1 MAE / Fβ / IoU | DUT-TE MAE / Fβ / IoU |
+|---|---|---|---|
+| BTBNet (2018) | ≥ 14.7M | 0.110 / 0.949 / 0.914 | 0.196 / 0.861 / 0.803 |
+| CENet (2019) | – | 0.061 / 0.945 / 0.932 | 0.141 / 0.869 / 0.833 |
+| DD (2020) | ≥ 42M | 0.045 / 0.966 / 0.941 | 0.074 / 0.935 / 0.903 |
+| BR²Net (2021) | ≥ 42M | 0.059 / 0.966 / 0.927 | 0.083 / 0.943 / 0.893 |
+| D-DFFNet (2023) | ≥ 46M | 0.036 / 0.973 / 0.951 | 0.070 / 0.939 / 0.906 |
+| **PixelBlurDetector** | **1.0M** | 0.087 / 0.953 / 0.921 | 0.165 / 0.863 / 0.822 |
+
+With CUHK-TR-1 + DUT-TR, PixelBlurDetector beats AENet on DUT-TE and comes close to EFENet, with a
+fraction of the parameters. The best published methods, such as D-DFFNet, are still clearly more
+accurate.
+
+The model shipped in the SDKs (3.0.0) was trained on a different set: all of CUHK (including
+CUHK-TE-1), DUT-TR and [EBD](https://github.com/yuxinjin-whu/D-DFFNet). Its DUT-TE score, 0.160 /
+0.872 / 0.821, is not comparable with the tables above, and it is not evaluated on CUHK-TE-1,
+which it was trained on.
+
+Notes:
+
+- **Parameters** of published methods count only their backbone, so they are lower bounds: VGG16
+  (14.7M), ResNeXt-101 (about 42M) or ResNeSt-101 (about 46M), as used in each paper or its code.
+  "–" means the backbone could not be confirmed. PixelBlurDetector has 1,007,885 parameters.
+- PixelBlurDetector reads 224×224 input; D-DFFNet, for example, reads 320×320.
+- Each PixelBlurDetector result is a single training run, with 10% of the training set held out for
+  early stopping. Expect differences of about ±0.01 between runs.
+
 ## Repositories
 
 The SDKs live in their own repositories, so Swift Package Manager and Gradle download only the
@@ -151,10 +205,11 @@ docs/images/   README images and the GitHub social preview
 
 ## Training data
 
-The model was trained on two research datasets:
+The model was trained on three research datasets:
 
 - [CUHK Blur Detection Dataset](http://www.cse.cuhk.edu.hk/~leojia/projects/dblurdetect/dataset.html): J. Shi, L. Xu, J. Jia, *Discriminative Blur Detection Features*, CVPR 2014
 - [DUT-DBD](https://openaccess.thecvf.com/content_cvpr_2018/html/Zhao_Defocus_Blur_Detection_CVPR_2018_paper.html): W. Zhao, F. Zhao, D. Wang, H. Lu, *Defocus Blur Detection via Multi-stream Bottom-Top-Bottom Fully Convolutional Network*, CVPR 2018
+- [EBD](https://github.com/yuxinjin-whu/D-DFFNet): Y. Jin, M. Qian, J. Xiong, N. Xue, G.-S. Xia, *Depth and DOF Cues Make A Better Defocus Blur Detector*, ICME 2023
 
 ## License
 
@@ -164,10 +219,10 @@ The model was trained on two research datasets:
 | Demo and test images (`cc0_*`) | **CC0** (public domain) from Wikimedia Commons, with no restrictions. See [credits](#sample-image-credits). |
 | Models bundled in the SDKs (`.mlpackage`, `.tflite`) | **Unclear; non-commercial for now.** See below. |
 
-The models were trained on the CUHK Blur Detection and DUT-DBD datasets. Neither dataset states a
+The models were trained on the CUHK Blur Detection, DUT-DBD and EBD datasets. None of them states a
 license, so we can't confirm that commercial use is allowed. Until that's resolved, the models are
 offered for research and non-commercial use only. If you want to use them commercially, contact the
-dataset authors first. Details are in [`MODEL_LICENSE.md`](MODEL_LICENSE.md).
+authors of all three datasets first. Details are in [`MODEL_LICENSE.md`](MODEL_LICENSE.md).
 
 ### Sample image credits
 
